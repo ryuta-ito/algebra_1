@@ -41,6 +41,15 @@ Axiom monoid_has_id : forall {M:Type} (S : set M) bin,
 Definition group {M : Type} (S : set M) bin :=
   monoid S bin /\ inversible S bin.
 
+Lemma group_has_id : forall {M:Type} (S : set M) bin,
+  group S bin -> exists id_S, belongs id_S S /\ id S id_S bin.
+Proof.
+  intros.
+  unfold group in H.
+  inversion H.
+  apply (monoid_has_id S bin H0).
+Qed.
+
 Axiom group_inverse_belongs : forall {M:Type} (S : set M) bin,
   forall g g', group S bin -> inverse S g g' bin -> belongs g S /\ belongs g' S.
 
