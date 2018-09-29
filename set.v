@@ -8,8 +8,7 @@ Definition subset {M : Type} (S T : set M) :=
 Definition map {M_A M_B : Type} f (A : set M_A) (B : set M_B) :=
   forall x, belongs x A -> belongs (f x) B.
 
-Definition injection {M : Type} f (A B : set M) :=
+Definition injection {M M' : Type} f (A : set M) (B : set M') :=
   map f A B -> forall x y,
-    belongs x A ->
-    belongs y A ->
     f x = f y -> x = y.
+Arguments injection {M M'} f A B /.
