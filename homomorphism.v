@@ -90,3 +90,39 @@ Proof.
   rewrite id_inverse_eq_id.
   reflexivity.
 Qed.
+
+Definition image {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G') : set M' :=
+  fun x => exists y, hom_f M G M' G' h y = x.
+Arguments image {M M'} G G' h /.
+
+Theorem image_has_id : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
+  belongs (id M' G') (image G G' h).
+Proof.
+  simpl. intros.
+  exists (id M G).
+  apply hom_id_map_id.
+Qed.
+
+Theorem image_is_entire : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
+  forall x y, belongs x (image G G' h) -> belongs y (image G G' h) -> belongs (bin M' G' x y) (image G G' h).
+Proof.
+  simpl.
+  intros.
+  inversion H as [x1].
+  inversion H0 as [y1].
+  exists (bin M G x1 y1).
+  rewrite <- H1.
+  rewrite <- H2.
+  rewrite (hom_law M G M' G' h).
+  reflexivity.
+Qed.
+
+Theorem image_has_inverse : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
+  forall x, belongs x (image G G' h) -> belongs (inverse M' G' x) (image G G' h).
+Proof.
+  simpl. intros.
+  inversion H.
+  exists (inverse M G x0).
+  rewrite <- H0.
+  apply hom_inverse_map_inverse.
+Qed.
