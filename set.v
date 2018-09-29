@@ -1,5 +1,7 @@
 Definition set (M : Type) := M -> Prop.
 Definition belongs {M : Type} (x : M) (P : set M) : Prop := P x.
+Arguments belongs {M} x P /.
+
 Definition subset {M : Type} (S T : set M) :=
   forall s, belongs s S -> belongs s T.
 
