@@ -1,6 +1,7 @@
 Require Export set.
 
 Structure group M := {
+  cset : set M;
   id : M;
   bin : M -> M -> M;
   inverse : M -> M;
@@ -13,6 +14,7 @@ Structure group M := {
 
 Structure hom M G M' G' := {
   hom_f : M -> M';
+  hom_is_map : map hom_f (cset M G) (cset M' G');
   hom_law : forall x y, hom_f (bin M G x y) = bin M' G' (hom_f x) (hom_f y)
 }.
 
