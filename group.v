@@ -26,6 +26,14 @@ Proof.
   reflexivity.
 Qed.
 
+Lemma both_sides_R : forall {M : Type} (bin : M -> M -> M) (x y z : M),
+  x = y -> bin x z = bin y z.
+Proof.
+  intros.
+  rewrite H.
+  reflexivity.
+Qed.
+
 Lemma id_inverse_eq_id : forall {M : Type} (G : group M),
   inverse M G (id M G) = id M G.
 Proof.

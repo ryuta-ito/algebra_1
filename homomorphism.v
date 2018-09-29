@@ -126,3 +126,38 @@ Proof.
   rewrite <- H0.
   apply hom_inverse_map_inverse.
 Qed.
+
+
+(* 準同型f: G -> G' に対し、 fが単射である <-> Ker(f) = {id_G} *)
+
+Theorem hom_is_injection_iff_kernel_is_id : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
+  injection (hom_f M G M' G' h) (cset M G) (cset M' G') <->
+  forall x y, belongs x (kernel G G' h) -> belongs y (kernel G G' h) -> x = y /\ x = id M G.
+Proof.
+  simpl. intros.
+  split.
+  - (* -> *)
+    intros.
+    split.
+    +
+      rewrite <- H1 in H0.
+      apply (H (hom_is_map M G M' G' h) x y H0).
+    +
+      assert (H2 := hom_id_map_id G G' h).
+      rewrite <- H2 in H0.
+      apply (H (hom_is_map M G M' G' h) x (id M G) H0).
+  - (* <- *)
+    intros.
+    assert (H2 := hom_law M G M' G' h x (inverse M G y)).
+    rewrite (hom_inverse_map_inverse G G' h y) in H2.
+    rewrite H1 in H2.
+    rewrite (invR M' G') in H2.
+    assert (H3 := H (bin M G x (inverse M G y)) (id M G) H2 (hom_id_map_id G G' h)).
+    inversion H3.
+    apply (both_sides_R (bin M G)) with (z := y) in H4.
+    rewrite <- (assoc M G) with (z := y) in H4.
+    rewrite (invL M G y) in H4.
+    rewrite (idR M G x) in H4.
+    rewrite (idL M G y) in H4.
+    assumption.
+Qed.
