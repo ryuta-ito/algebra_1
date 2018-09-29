@@ -23,3 +23,17 @@ Proof.
   rewrite H.
   reflexivity.
 Qed.
+
+Lemma id_inverse_eq_id : forall {M : Type} (G : group M),
+  inverse M G (id M G) = id M G.
+Proof.
+  intros.
+  assert (H := idR M G (id M G)).
+  apply (both_sides_L (bin M G))
+    with (z := (inverse M G (id M G))) in H.
+  rewrite (invL M G (id M G)) in H.
+  rewrite (assoc M G (inverse M G (id M G)) (id M G) (id M G)) in H.
+  rewrite (idR M G (inverse M G (id M G))) in H.
+  rewrite (idR M G (inverse M G (id M G))) in H.
+  assumption.
+Qed.
