@@ -161,3 +161,69 @@ Proof.
     rewrite (idL M G y) in H4.
     assumption.
 Qed.
+
+Section g_Aut_G_hom.
+  Variables M : Type.
+  Variables G : group M.
+  Definition M' := M -> M.
+  Variables G' : group M'.
+
+  Definition i g := fun h:M => bin M G (bin M G g h) (inverse M G g).
+  (* i_g h = g h g^(-1) *)
+  Arguments i g /.
+  Definition f g := i g.  (* f: G -> Aut G
+                             f: g |-> i g *)
+  Arguments f g /.
+
+  Definition comp (f f' : M') :=
+    fun x => f (f' x).
+  Arguments comp f f' /.
+
+  Theorem f_is_map : map f (cset M G) (cset M' G').
+  Proof.
+  Admitted.
+
+  Check Build_hom M G M' G' f f_is_map.
+
+  Axiom extensionality : forall {X Y:Type} (x:X) (f g:X->Y),
+    f x = g x -> f = g.
+  Theorem f_sat_hom_law : forall g1 g2, f (bin M G g1 g2) = (comp (f g1) (f g2)).
+  Proof.
+    simpl.
+    intros.
+    apply (extensionality g1).
+    rewrite (inverse_distributive G g1 g2).
+    rewrite <- (assoc M G g1 g2 g1).
+    rewrite (assoc M G (bin M G g1 (bin M G g2 g1)) (inverse M G g2) (inverse M G g1)).
+    rewrite <- (assoc M G g1 (bin M G g2 g1) (inverse M G g2)).
+    reflexivity.
+  Qed.
+End g_Aut_G_hom.
+
+Section id_is_hom.
+  Variables M : Type.
+  Variables G : group M.
+
+  Definition id_f := fun x:M => x.
+
+  Theorem id_is_map : map id_f (cset M G) (cset M G).
+  Proof.
+    simpl. intros.
+    unfold id_f.
+    assumption.
+  Qed.
+
+  Theorem id_sat_hom_law : forall x y,
+    id_f (bin M G x y) = bin M G (id_f x) (id_f y).
+  Proof.
+    simpl. intros.
+    unfold id_f.
+    reflexivity.
+  Qed.
+
+  Theorem id_is_hom : hom M G M G.
+  Proof.
+    apply (Build_hom M G M G id_f id_is_map id_sat_hom_law).
+  Qed.
+End id_is_hom.
+
