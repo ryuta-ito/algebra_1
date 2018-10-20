@@ -1,3 +1,5 @@
+Require Import Setoid.
+
 Definition set (M : Type) := M -> Prop.
 Definition belongs {M : Type} (x : M) (P : set M) : Prop := P x.
 Arguments belongs {M} x P /.
@@ -12,6 +14,9 @@ Arguments subset {M} S T /.
 Definition same_set {M : Type} (S T : set M) :=
   subset S T /\ subset T S.
 Arguments same_set {M} S T /.
+
+Axiom same_set__eq : forall {M : Type} (S T : set M),
+  same_set S T <-> S = T.
 
 Definition not_empty {M : Type} (S T : set M) :=
   exists x, belongs x S /\ belongs x T.
