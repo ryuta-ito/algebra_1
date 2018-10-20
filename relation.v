@@ -42,18 +42,19 @@ Proof.
 Qed.
 
 Theorem belongs_y_in_x_eq_class__x_eq_class_eq_y_eq_class :
-  forall {X : Type} (x y z : X) (r : eq_R X),
+  forall {X : Type} (x y : X) (r : eq_R X),
     belongs y (eq_class r x) ->
-    same_set (eq_class r x) (eq_class r x).
+    same_set (eq_class r x) (eq_class r y).
 Proof.
   simpl. intros.
   split.
   -
     intros.
-    assumption.
+    apply (symm X r) in H.
+    apply (trans X r y x s H H0).
   -
     intros.
-    assumption.
+    apply (trans X r x y s H H0).
 Qed.
 
 Theorem eq_class_not_empty__same :
