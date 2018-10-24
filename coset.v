@@ -284,3 +284,21 @@ Proof.
     rewrite same_set__eq in H_inv_g_eq_H_inv_h_inv_g.
     assumption.
 Qed.
+
+(* beta : Hg |-> g^(-1)H *)
+Inductive beta {M : Type} (H G : group M) : set M -> set M -> Prop :=
+| beta_R : forall g, belongs g (cset M G) ->
+                     (beta H G
+                       (eq_class (r_coset_eq_R H G) g)
+                       (eq_class (l_coset_eq_R H G) (inverse M G g))).
+
+Theorem alpha_inverse_beta : forall {M : Type} (H G : group M),
+  inverse_rel (alpha H G) (beta H G).
+Proof.
+  simpl.
+  intros.
+  inversion H0.
+  assert (H4 := beta_R H G (inverse M G g)).
+  rewrite inverse_eq in H4.
+  apply (H4 (inv_belongs M G g H1)).
+Qed.
