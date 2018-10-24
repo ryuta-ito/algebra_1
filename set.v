@@ -30,3 +30,17 @@ Definition injection {M M' : Type} f (A : set M) (B : set M') :=
   map f A B -> forall x y,
     f x = f y -> x = y.
 Arguments injection {M M'} f A B /.
+
+Definition surjection {M M' : Type} f (A : set M) (B : set M') :=
+  map f A B ->
+    forall y, belongs y B ->
+      exists x, belongs x A -> f x = y.
+Arguments surjection {M M'} f A B /.
+
+Definition bijection {M M' : Type} f (A : set M) (B : set M') :=
+  injection f A B /\ surjection f A B.
+Arguments bijection {M M'} f A B /.
+
+Definition same_order {M M' : Type} (A : set M) (B : set M') :=
+  exists f, bijection f A B.
+Arguments same_order {M M'} A B /.

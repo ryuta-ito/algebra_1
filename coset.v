@@ -302,3 +302,30 @@ Proof.
   rewrite inverse_eq in H4.
   apply (H4 (inv_belongs M G g H1)).
 Qed.
+
+(* |gH| = |H| *)
+Theorem gH_same_order_H : forall {M : Type} (H G : group M) g,
+  same_order (left_coset' H G g) (cset M H).
+Proof.
+  intros.
+  simpl.
+  exists (fun h:M => bin M G (inverse M G g) h).
+  split.
+  - (* injective *)
+    intros.
+    apply (both_sides_L (bin M G)) with (z := g) in H1.
+    rewrite assoc in H1.
+    rewrite assoc in H1.
+    rewrite invR in H1.
+    rewrite idL in H1.
+    rewrite idL in H1.
+    assumption.
+  - (* surjective *)
+    intros.
+    exists (bin M G g y).
+    intros.
+    rewrite assoc.
+    rewrite invL.
+    rewrite idL.
+    reflexivity.
+Qed.
