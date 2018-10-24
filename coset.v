@@ -230,4 +230,57 @@ Definition r_coset_eq_R {M : Type} (H G : group M) : eq_R M :=
                (r_coset_rel_reflexive H G)
                (r_coset_rel_symmetric H G)
                (r_coset_rel_transitive H G).
+
+(* alpha : gH |-> Hg^(-1) *)
+Inductive alpha {M : Type} (H G : group M) : set M -> set M -> Prop :=
+| alpha_R : forall g, belongs g (cset M G) ->
+                      (alpha H G
+                             (eq_class (l_coset_eq_R H G) g)
+                             (eq_class (r_coset_eq_R H G) (inverse M G g))).
+
+(* well-defined *)
+Theorem alpha_is_map_rel : forall {M : Type} (H G : group M),
+  subgroup H G -> map_rel (alpha H G).
+Proof.
+  intros M H G Hsubgroup .
+  simpl.
+  intros x y y' Halpha_y Halpha_y'.
+  inversion Halpha_y as [g g_in_G Halpha_y_domain Halpha_y_range].
+  inversion Halpha_y' as [g0 g0_in_G Halpha_y'_domain Halpha_y'_range].
+  assert (Heq:=Halpha_y_domain).
+  rewrite <- Halpha_y'_domain in Heq.
+  assert (g0_in_g0H := x_belongs_x_eq_class (l_coset_eq_R H G) g0).
+  rewrite <- Heq in g0_in_g0H.
+  rename g0_in_g0H into g0_in_gH.
+  simpl in g0_in_gH.
+  assert (gH_eq_gH' := left_coset_eq_left_coset' H G g Hsubgroup).
+  inversion gH_eq_gH' as [gH_subseq_gH' _].
+  apply gH_subseq_gH' in g0_in_gH as g0_in_gH'.
+  simpl in g0_in_gH'.
+  unfold left_coset' in g0_in_gH'.
+  inversion g0_in_gH' as [h [h_in_H g0_eq_gh]].
+  rewrite g0_eq_gh.
+  rewrite inverse_distributive.
+  assert (belongs (bin M G (inverse M G h) (inverse M G g))
+                  (eq_class (r_coset_eq_R H G) (inverse M G g)))
+    as inv_h_inv_g_in_H_inv_g.
+  -
+    apply inv_belongs in h_in_H as inv_h_in_H.
+    apply inv_belongs in g_in_G as inv_g_in_G.
+    assert (inv_h_inv_g_in_Hg' := g_in_G_h_in_H__gh_in_Hg
+                                   H G (inverse M H h) (inverse M G g)
+                                   inv_h_in_H inv_g_in_G).
+    assert (Hg_eq_Hg' := right_coset_eq_right_coset' H G (inverse M G g) Hsubgroup).
+    inversion Hg_eq_Hg' as [_ Hg'_subseq_Hg].
+    apply Hg'_subseq_Hg in inv_h_inv_g_in_Hg' as inv_h_inv_g_in_Hg.
+    unfold right_coset in inv_h_inv_g_in_Hg.
+    rewrite (subgroup_inverse_eq H G h Hsubgroup h_in_H) in inv_h_inv_g_in_Hg.
+    assumption.
+  -
+    assert (H_inv_g_eq_H_inv_h_inv_g := belongs_y_in_x_eq_class__x_eq_class_eq_y_eq_class
+                     (inverse M G g)
+                     (bin M G (inverse M G h) (inverse M G g))
+                     (r_coset_eq_R H G) inv_h_inv_g_in_H_inv_g).
+    rewrite same_set__eq in H_inv_g_eq_H_inv_h_inv_g.
+    assumption.
 Qed.
