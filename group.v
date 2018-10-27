@@ -136,3 +136,63 @@ Proof.
   symmetry.
   assumption.
 Qed.
+
+Inductive group_gen {M : Type} (S : set M) (G : group M) : M -> Prop :=
+| group_gen_id : group_gen S G (id M G)
+| group_gen_base : forall g,
+    subset S (cset M G) -> belongs g S -> group_gen S G g
+| group_gen_base_inverse : forall g,
+    subset S (cset M G) -> belongs g S -> group_gen S G (inverse M G g)
+| group_gen_bin : forall g g',
+    group_gen S G g -> group_gen S G g' -> group_gen S G (bin M G g g').
+
+Definition group_gen_set {M : Type} (S : set M) (G : group M) : set M :=
+  fun x => group_gen S G x.
+
+Theorem group_gen_set_has_id : forall {M : Type} (S : set M) (G : group M), exists id, forall g,
+  belongs id (group_gen_set S G) /\
+  (belongs g (group_gen_set S G) -> bin M G g id = g /\ bin M G id g = g).
+Proof.
+  intros.
+  exists (id M G).
+  intros.
+  split.
+  -
+    apply group_gen_id.
+  -
+    intros.
+    split.
+    +
+      apply (idR M G).
+    +
+      apply (idL M G).
+Qed.
+
+
+Theorem group_gen_set_is_entire : forall {M : Type} (S : set M) (G : group M) g g',
+  belongs g (group_gen_set S G) ->
+  belongs g' (group_gen_set S G) ->
+  belongs (bin M G g g') (group_gen_set S G).
+Proof.
+  intros. apply (group_gen_bin S G g g' H H0).
+Qed.
+
+Theorem group_gen_set_has_inverse : forall {M : Type} (S : set M) (G : group M) g,
+  belongs g (group_gen_set S G) ->
+  belongs (inverse M G g) (group_gen_set S G).
+Proof.
+  simpl.
+  intros.
+  induction H.
+  -
+    rewrite id_inverse_eq_id.
+    apply group_gen_id.
+  -
+    apply (group_gen_base_inverse S G g H H0).
+  -
+    rewrite inverse_eq.
+    apply (group_gen_base S G g H H0).
+  -
+    rewrite inverse_distributive.
+    apply (group_gen_bin S G (inverse M G g') (inverse M G g) IHgroup_gen2 IHgroup_gen1).
+Qed.
