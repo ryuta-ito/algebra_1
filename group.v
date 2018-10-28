@@ -85,6 +85,13 @@ Definition subgroup {M : Type} (H G : group M) :=
   forall g g', belongs g (cset M H) -> belongs g' (cset M H) -> bin M H g g' = bin M G g g'.
 Arguments subgroup {M} H G /.
 
+Definition normal_group {M : Type} (H G : group M) := forall h g,
+  subgroup H G ->
+  belongs g (cset M G) ->
+  belongs h (cset M H) ->
+  belongs (bin M G (bin M G g h) (inverse M G g)) (cset M H).
+Arguments normal_group {M} H G /.
+
 Theorem subgroup_id_eq : forall {M : Type} (H G : group M),
   subgroup H G -> id M H = id M G.
 Proof.
