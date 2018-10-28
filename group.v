@@ -15,12 +15,6 @@ Structure group M := {
   invL : forall g, bin (inverse g) g = id
 }.
 
-Structure hom M G M' G' := {
-  hom_f : M -> M';
-  hom_is_map : map hom_f (cset M G) (cset M' G');
-  hom_law : forall x y, hom_f (bin M G x y) = bin M' G' (hom_f x) (hom_f y)
-}.
-
 Lemma both_sides_L : forall {M : Type} (bin : M -> M -> M) (x y z : M),
   x = y -> bin z x = bin z y.
 Proof.

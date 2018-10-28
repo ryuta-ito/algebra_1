@@ -1,5 +1,11 @@
 Require Import group.
 
+Structure hom M G M' G' := {
+  hom_f : M -> M';
+  hom_is_map : map hom_f (cset M G) (cset M' G');
+  hom_law : forall x y, hom_f (bin M G x y) = bin M' G' (hom_f x) (hom_f y)
+}.
+
 Theorem hom_id_map_id : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
   hom_f M G M' G' h (id M G) = id M' G'.
 Proof.
