@@ -232,3 +232,28 @@ Section id_is_hom.
     apply (Build_hom M G M G id_f id_is_map id_sat_hom_law).
   Qed.
 End id_is_hom.
+
+Definition kernel_group {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G') : group M :=
+  Build_group M
+   (kernel G G' h)
+   (id M G)
+   (kernel_has_id G G' h)
+   (bin M G)
+   (inverse M G)
+   (kernel_has_inverse G G' h)
+   (kernel_is_entire G G' h)
+   (assoc M G)
+   (idR M G) (idL M G)
+   (invR M G) (invL M G).
+
+Theorem kernel_group_is_normal_group : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
+  normal_group (kernel_group G G' h) G.
+Proof.
+  simpl. intros.
+  rewrite hom_law. rewrite hom_law.
+  rewrite H1.
+  rewrite idR.
+  rewrite hom_inverse_map_inverse.
+  rewrite invR.
+  reflexivity.
+Qed.
