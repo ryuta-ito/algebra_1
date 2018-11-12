@@ -150,25 +150,11 @@ Inductive group_gen {M : Type} (S : set M) (G : group M) : M -> Prop :=
 Definition group_gen_set {M : Type} (S : set M) (G : group M) : set M :=
   fun x => group_gen S G x.
 
-Theorem group_gen_set_has_id : forall {M : Type} (S : set M) (G : group M), exists id, forall g,
-  belongs id (group_gen_set S G) /\
-  (belongs g (group_gen_set S G) -> bin M G g id = g /\ bin M G id g = g).
+Theorem group_gen_set_has_id : forall {M : Type} (S : set M) (G : group M), belongs (id M G) (group_gen S G).
 Proof.
-  intros.
-  exists (id M G).
-  intros.
-  split.
-  -
-    apply group_gen_id.
-  -
-    intros.
-    split.
-    +
-      apply (idR M G).
-    +
-      apply (idL M G).
+  simpl. intros.
+  apply group_gen_id.
 Qed.
-
 
 Theorem group_gen_set_is_entire : forall {M : Type} (S : set M) (G : group M) g g',
   belongs g (group_gen_set S G) ->
