@@ -183,3 +183,16 @@ Proof.
     rewrite inverse_distributive.
     apply (group_gen_bin S G (inverse M G g') (inverse M G g) IHgroup_gen2 IHgroup_gen1).
 Qed.
+
+Definition gen_group {M : Type} (S :set M) (G : group M) :=
+  Build_group M
+    (group_gen S G)
+    (id M G)
+    (group_gen_set_has_id S G)
+    (bin M G)
+    (inverse M G)
+    (group_gen_set_has_inverse S G)
+    (group_gen_set_is_entire S G)
+    (assoc M G)
+    (idR M G) (idL M G)
+    (invR M G) (invL M G).
