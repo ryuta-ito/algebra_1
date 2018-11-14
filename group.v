@@ -196,3 +196,160 @@ Definition gen_group {M : Type} (S :set M) (G : group M) :=
     (assoc M G)
     (idR M G) (idL M G)
     (invR M G) (invL M G).
+
+(* H, S, T ⊆ G, H = <T>, G = <S>        *)
+(* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
+Theorem normal_group_mitigative_condition : forall {M : Type} (G : group M) (S T : set M),
+  subset T S -> subset S (cset M G) ->
+  (forall x y,
+    belongs x S -> belongs y T ->
+    belongs (bin M G (bin M G x y) (inverse M G x))
+            (group_gen T G) /\
+    belongs (bin M G (bin M G (inverse M G x) y) x)
+            (group_gen T G)) ->
+    normal_group (gen_group T G) (gen_group S G).
+Proof.
+  simpl.
+  intros M G S T
+         T_subset_S S_subset_G
+         mitigative_normal_group_assumption
+         h g T'_subgroup_S'
+         g_in_S'.
+  generalize h.  (* important!! *)
+  induction g_in_S'
+  as [| g _ g_in_S
+      | g _ g_in_S
+      | g' g'' g'_in_S' IH_g'_in_S' g''_in_S' IH_g''_in_S'].
+  - (* group_gen_id of g *)
+    intros h' h'_in_T'.
+    rewrite id_inverse_eq_id.
+    rewrite idL.
+    rewrite idR.
+    assumption.
+  - (* group_gen_base of g *)
+    intros h' h'_in_T'.
+    induction h'_in_T'
+    as [| h' _ h'_in_T
+        | h' _ h'_in_T
+        | h' h'' h'_in_T' IH_h'_in_T' h''_in_T' IH_h''_in_T'].
+    + (* group_gen_id of h *)
+      rewrite idR.
+      rewrite invR.
+      apply group_gen_id.
+    + (* group_gen_base of h *)
+      apply (mitigative_normal_group_assumption g h' g_in_S h'_in_T).
+    + (* group_gen_base_inverse of h *)
+      assert (tmp := mitigative_normal_group_assumption g h' g_in_S h'_in_T).
+      inversion tmp as [g_h'_inv_g_in_T' _]. clear tmp.
+      apply (group_gen_set_has_inverse T G (bin M G (bin M G g h') (inverse M G g))) in g_h'_inv_g_in_T' as inv__g_h'_inv_g_in_T'.
+      simpl in inv__g_h'_inv_g_in_T'.
+      rewrite inverse_distributive in inv__g_h'_inv_g_in_T'.
+      rewrite inverse_eq in inv__g_h'_inv_g_in_T'.
+      rewrite inverse_distributive in inv__g_h'_inv_g_in_T'.
+      unfold group_gen_set in inv__g_h'_inv_g_in_T'.
+      rewrite <- assoc.
+      assumption.
+    + (* group_gen_bin of h *)
+      replace h' with (bin M G h' (bin M G (inverse M G g) g)).
+      *
+        replace (bin M G h' (bin M G (inverse M G g) g))
+        with (bin M G (bin M G h' (inverse M G g)) g)
+        by (symmetry; apply assoc).
+
+        replace (bin M G (bin M G (bin M G h' (inverse M G g)) g) h'')
+        with (bin M G (bin M G h' (inverse M G g)) (bin M G g h''))
+        by apply assoc.
+
+        replace (bin M G g (bin M G (bin M G h' (inverse M G g)) (bin M G g h'')))
+        with (bin M G (bin M G g (bin M G h' (inverse M G g))) (bin M G g h''))
+        by (symmetry; apply assoc).
+
+        replace (bin M G (bin M G (bin M G g (bin M G h' (inverse M G g))) (bin M G g h'')) (inverse M G g))
+        with (bin M G (bin M G g (bin M G h' (inverse M G g))) (bin M G (bin M G g h'') (inverse M G g)))
+        by apply assoc.
+
+        rewrite <- assoc in IH_h'_in_T'.
+        apply (group_gen_bin T G
+                (bin M G g (bin M G h' (inverse M G g)))
+                (bin M G (bin M G g h'') (inverse M G g))
+                 IH_h'_in_T' IH_h''_in_T').
+      *
+        rewrite invL.
+        rewrite idR.
+        reflexivity.
+  - (* group_gen_base_inverse of g *)
+    intros h' h'_in_T'.
+    induction h'_in_T'
+    as [| h' _ h'_in_T
+        | h' _ h'_in_T
+        | h' h'' h'_in_T' IH_h'_in_T' h''_in_T' IH_h''_in_T'].
+    + (* group_gen_id of h *)
+      rewrite idR.
+      rewrite invR.
+      apply group_gen_id.
+    + (* group_gen_base of h *)
+      rewrite inverse_eq.
+      apply (mitigative_normal_group_assumption g h' g_in_S h'_in_T).
+    + (* group_gen_base_inverse of h *)
+      rewrite inverse_eq.
+      assert (tmp := mitigative_normal_group_assumption g h' g_in_S h'_in_T).
+      inversion tmp as [_ inv_g_h'_g_in_T']. clear tmp.
+      apply (group_gen_set_has_inverse T G (bin M G (bin M G (inverse M G g) h') g)) in inv_g_h'_g_in_T' as inv__inv_g_h'_g_in_T'.
+      simpl in inv__inv_g_h'_g_in_T'.
+      rewrite inverse_distributive in inv__inv_g_h'_g_in_T'.
+      rewrite inverse_distributive in inv__inv_g_h'_g_in_T'.
+      rewrite inverse_eq in inv__inv_g_h'_g_in_T'.
+      unfold group_gen_set in inv__inv_g_h'_g_in_T'.
+      rewrite <- assoc.
+      assumption.
+    + (* group_gen_bin of h *)
+      rewrite inverse_eq.
+      replace h' with (bin M G h' (bin M G g (inverse M G g))).
+      *
+        replace (bin M G h' (bin M G g (inverse M G g)))
+        with (bin M G (bin M G h' g) (inverse M G g))
+        by (symmetry; apply assoc).
+
+        replace (bin M G (bin M G (bin M G h' g) (inverse M G g)) h'')
+        with (bin M G (bin M G h' g) (bin M G (inverse M G g) h''))
+        by apply assoc.
+
+        replace (bin M G (inverse M G g) (bin M G (bin M G h' g) (bin M G (inverse M G g) h'')))
+        with (bin M G (bin M G (inverse M G g) (bin M G h' g)) (bin M G (inverse M G g) h''))
+        by (symmetry; apply assoc).
+
+        replace (bin M G (bin M G (bin M G (inverse M G g) (bin M G h' g)) (bin M G (inverse M G g) h'')) g)
+        with (bin M G (bin M G (inverse M G g) (bin M G h' g)) (bin M G (bin M G (inverse M G g) h'') g))
+        by apply assoc.
+
+        rewrite <- assoc in IH_h'_in_T'.
+        rewrite inverse_eq in IH_h'_in_T'.
+        rewrite inverse_eq in IH_h''_in_T'.
+        apply (group_gen_bin T G
+                             (bin M G (inverse M G g) (bin M G h' g))
+                             (bin M G (bin M G (inverse M G g) h'') g)
+                             IH_h'_in_T' IH_h''_in_T').
+      *
+        rewrite invR.
+        rewrite idR.
+        reflexivity.
+  - (* group_gen_bin of g *)
+    intros h' h'_in_T'.
+    rewrite inverse_distributive.
+    replace (bin M G (bin M G g' g'') h')
+    with (bin M G g' (bin M G g'' h'))
+    by apply assoc.
+
+    replace (bin M G (bin M G g' (bin M G g'' h'))
+                     (bin M G (inverse M G g'') (inverse M G g')))
+    with (bin M G (bin M G (bin M G g' (bin M G g'' h')) (inverse M G g''))
+                  (inverse M G g'))
+    by (symmetry; apply assoc).
+
+    replace (bin M G (bin M G g' (bin M G g'' h')) (inverse M G g''))
+    with (bin M G g' (bin M G (bin M G g'' h') (inverse M G g'')))
+    by apply assoc.
+
+    assert (g''_h'_inv_g''_in_T := IH_g''_in_S' h' h'_in_T').
+    apply (IH_g'_in_S' (bin M G (bin M G g'' h') (inverse M G g'')) g''_h'_inv_g''_in_T).
+Qed.
