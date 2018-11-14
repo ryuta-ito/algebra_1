@@ -189,8 +189,6 @@ Section g_Aut_G_hom.
   Proof.
   Admitted.
 
-  Check Build_hom M G M' G' f f_is_map.
-
   Axiom extensionality : forall {X Y:Type} (x:X) (f g:X->Y),
     f x = g x -> f = g.
   Theorem f_sat_hom_law : forall g1 g2, f (bin M G g1 g2) = (comp (f g1) (f g2)).
