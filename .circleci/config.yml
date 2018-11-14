@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: coqorg/coq:8.8
+    steps:
+      - checkout
+      - run:
+          command: |
+            export PATH=/home/coq/.opam/4.05.0/bin/:$PATH
+            ./bin/build.sh
