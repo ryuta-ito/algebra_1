@@ -1,8 +1,8 @@
 Require Import group.
 
-Structure hom M G M' G' := {
+Structure hom M (G : group M) M' (G' : group M') := {
   hom_f : M -> M';
-  hom_is_map : map hom_f (cset M G) (cset M' G');
+  hom_is_map : map hom_f G G';
   hom_law : forall x y, hom_f (bin M G x y) = bin M' G' (hom_f x) (hom_f y)
 }.
 
@@ -137,7 +137,7 @@ Qed.
 (* 準同型f: G -> G' に対し、 fが単射である <-> Ker(f) = {id_G} *)
 
 Theorem hom_is_injection_iff_kernel_is_id : forall {M M' : Type} (G : group M) (G' : group M') (h : hom M G M' G'),
-  injection (hom_f M G M' G' h) (cset M G) (cset M' G') <->
+  injection (hom_f M G M' G' h) G G' <->
   forall x y, belongs x (kernel G G' h) -> belongs y (kernel G G' h) -> x = y /\ x = id M G.
 Proof.
   simpl. intros.
@@ -185,7 +185,7 @@ Section g_Aut_G_hom.
     fun x => f (f' x).
   Arguments comp f f' /.
 
-  Theorem f_is_map : map f (cset M G) (cset M' G').
+  Theorem f_is_map : map f G G'.
   Proof.
   Admitted.
 
@@ -212,7 +212,7 @@ Section id_is_hom.
 
   Definition id_f := fun x:M => x.
 
-  Theorem id_is_map : map id_f (cset M G) (cset M G).
+  Theorem id_is_map : map id_f G G.
   Proof.
     simpl. intros.
     unfold id_f.

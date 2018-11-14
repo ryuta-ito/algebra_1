@@ -3,20 +3,20 @@ Require Export relation.
 
 Definition left_coset_rel {M : Type} (H G : group M) : relation M :=
   fun x => fun y =>
-    subgroup H G -> belongs (bin M G (inverse M G x) y) (cset M H).
+    subgroup H G -> belongs (bin M G (inverse M G x) y) H.
 
 Definition right_coset_rel {M : Type} (H G : group M) : relation M :=
   fun x => fun y =>
-    subgroup H G -> belongs (bin M G y (inverse M G x)) (cset M H).
+    subgroup H G -> belongs (bin M G y (inverse M G x)) H.
 
 Definition left_coset {M : Type} (H G : group M) (x : M) : set M :=
   fun y => left_coset_rel H G x y.
 
 Definition left_coset' {M : Type} (H G : group M) (x : M) : set M :=
-  fun y => exists h, belongs h (cset M H) /\ y = bin M G x h.
+  fun y => exists h, belongs h H /\ y = bin M G x h.
 
 Lemma g_in_G_h_in_H__gh_in_gH : forall {M : Type} (H G : group M) h g,
-  belongs h (cset M H) -> belongs g (cset M G) ->
+  belongs h H -> belongs g G ->
   belongs (bin M G g h) (left_coset' H G g).
 Proof.
   intros.
@@ -34,10 +34,10 @@ Definition right_coset {M : Type} (H G : group M) (x : M) : set M :=
   fun y => right_coset_rel H G x y.
 
 Definition right_coset' {M : Type} (H G : group M) (x : M) : set M :=
-  fun y => exists h, belongs h (cset M H) /\ y = bin M G h x.
+  fun y => exists h, belongs h H /\ y = bin M G h x.
 
 Lemma g_in_G_h_in_H__gh_in_Hg : forall {M : Type} (H G : group M) h g,
-  belongs h (cset M H) -> belongs g (cset M G) ->
+  belongs h H -> belongs g G ->
   belongs (bin M G h g) (right_coset' H G g).
 Proof.
   intros.
@@ -233,7 +233,7 @@ Definition r_coset_eq_R {M : Type} (H G : group M) : eq_R M :=
 
 (* alpha : gH |-> Hg^(-1) *)
 Inductive alpha {M : Type} (H G : group M) : set M -> set M -> Prop :=
-| alpha_R : forall g, belongs g (cset M G) ->
+| alpha_R : forall g, belongs g G ->
                       (alpha H G
                              (eq_class (l_coset_eq_R H G) g)
                              (eq_class (r_coset_eq_R H G) (inverse M G g))).
@@ -287,7 +287,7 @@ Qed.
 
 (* beta : Hg |-> g^(-1)H *)
 Inductive beta {M : Type} (H G : group M) : set M -> set M -> Prop :=
-| beta_R : forall g, belongs g (cset M G) ->
+| beta_R : forall g, belongs g G ->
                      (beta H G
                        (eq_class (r_coset_eq_R H G) g)
                        (eq_class (l_coset_eq_R H G) (inverse M G g))).
@@ -305,7 +305,7 @@ Qed.
 
 (* |gH| = |H| *)
 Theorem gH_same_order_H : forall {M : Type} (H G : group M) g,
-  same_order (left_coset' H G g) (cset M H).
+  same_order (left_coset' H G g) H.
 Proof.
   intros.
   simpl.

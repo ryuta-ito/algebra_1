@@ -1,7 +1,7 @@
 Require Export set.
 
 Structure group M := {
-  cset : set M;
+  cset :> set M;
   id : M;
   id_belongs : belongs id cset;
   bin : M -> M -> M;
@@ -81,15 +81,15 @@ Proof.
 Qed.
 
 Definition subgroup {M : Type} (H G : group M) :=
-  (forall g, belongs g (cset M H) -> belongs g (cset M G)) /\
-  forall g g', belongs g (cset M H) -> belongs g' (cset M H) -> bin M H g g' = bin M G g g'.
+  (forall g, belongs g H -> belongs g G) /\
+  forall g g', belongs g H -> belongs g' H -> bin M H g g' = bin M G g g'.
 Arguments subgroup {M} H G /.
 
 Definition normal_group {M : Type} (H G : group M) := forall h g,
   subgroup H G ->
-  belongs g (cset M G) ->
-  belongs h (cset M H) ->
-  belongs (bin M G (bin M G g h) (inverse M G g)) (cset M H).
+  belongs g G ->
+  belongs h H ->
+  belongs (bin M G (bin M G g h) (inverse M G g)) H.
 Arguments normal_group {M} H G /.
 
 Theorem subgroup_id_eq : forall {M : Type} (H G : group M),
@@ -111,7 +111,7 @@ Proof.
 Qed.
 
 Theorem subgroup_has_id : forall {M : Type} (H G : group M),
-  subgroup H G -> belongs (id M G) (cset M H).
+  subgroup H G -> belongs (id M G) H.
 Proof.
   intros.
   rewrite <- (subgroup_id_eq H G H0).
@@ -120,7 +120,7 @@ Qed.
 
 Theorem subgroup_inverse_eq : forall {M : Type} (H G : group M) x,
   subgroup H G ->
-  belongs x (cset M H) ->
+  belongs x H ->
   inverse M H x = inverse M G x.
 Proof.
   intros.
@@ -141,9 +141,9 @@ Qed.
 Inductive group_gen {M : Type} (S : set M) (G : group M) : M -> Prop :=
 | group_gen_id : group_gen S G (id M G)
 | group_gen_base : forall g,
-    subset S (cset M G) -> belongs g S -> group_gen S G g
+    subset S G -> belongs g S -> group_gen S G g
 | group_gen_base_inverse : forall g,
-    subset S (cset M G) -> belongs g S -> group_gen S G (inverse M G g)
+    subset S G -> belongs g S -> group_gen S G (inverse M G g)
 | group_gen_bin : forall g g',
     group_gen S G g -> group_gen S G g' -> group_gen S G (bin M G g g').
 
@@ -200,7 +200,7 @@ Definition gen_group {M : Type} (S :set M) (G : group M) :=
 (* H, S, T ⊆ G, H = <T>, G = <S>        *)
 (* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
 Theorem normal_group_mitigative_condition : forall {M : Type} (G : group M) (S T : set M),
-  subset T S -> subset S (cset M G) ->
+  subset T S -> subset S G ->
   (forall x y,
     belongs x S -> belongs y T ->
     belongs (bin M G (bin M G x y) (inverse M G x))
