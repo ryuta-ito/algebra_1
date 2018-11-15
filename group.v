@@ -150,9 +150,6 @@ Inductive group_gen (M : Type) (S : set M) (G : group M) : M -> Prop :=
 | group_gen_bin : forall g g',
     group_gen S G g -> group_gen S G g' -> group_gen S G (bin G g g').
 
-Definition group_gen_set (M : Type) (S : set M) (G : group M) : set M :=
-  fun x => group_gen S G x.
-
 Theorem group_gen_set_has_id : forall (M : Type) (S : set M) (G : group M), belongs (id G) (group_gen S G).
 Proof.
   simpl. intros.
@@ -160,16 +157,16 @@ Proof.
 Qed.
 
 Theorem group_gen_set_is_entire : forall (M : Type) (S : set M) (G : group M) g g',
-  belongs g (group_gen_set S G) ->
-  belongs g' (group_gen_set S G) ->
-  belongs (bin G g g') (group_gen_set S G).
+  belongs g (group_gen S G) ->
+  belongs g' (group_gen S G) ->
+  belongs (bin G g g') (group_gen S G).
 Proof.
   intros. apply (group_gen_bin H H0).
 Qed.
 
 Theorem group_gen_set_has_inverse : forall (M : Type) (S : set M) (G : group M) g,
-  belongs g (group_gen_set S G) ->
-  belongs (inverse G g) (group_gen_set S G).
+  belongs g (group_gen S G) ->
+  belongs (inverse G g) (group_gen S G).
 Proof.
   simpl.
   intros.
@@ -245,7 +242,6 @@ Proof.
       rewrite inverse_distributive in inv__g_h'_inv_g_in_T'.
       rewrite inverse_eq in inv__g_h'_inv_g_in_T'.
       rewrite inverse_distributive in inv__g_h'_inv_g_in_T'.
-      unfold group_gen_set in inv__g_h'_inv_g_in_T'.
       rewrite <- assoc.
       assumption.
     + (* group_gen_bin of h *)
@@ -295,7 +291,6 @@ Proof.
       rewrite inverse_distributive in inv__inv_g_h'_g_in_T'.
       rewrite inverse_distributive in inv__inv_g_h'_g_in_T'.
       rewrite inverse_eq in inv__inv_g_h'_g_in_T'.
-      unfold group_gen_set in inv__inv_g_h'_g_in_T'.
       rewrite <- assoc.
       assumption.
     + (* group_gen_bin of h *)
