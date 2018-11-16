@@ -193,6 +193,26 @@ Definition gen_group (M : Type) (S :set M) (G : group M) :=
     (idR G) (idL G)
     (invR G) (invL G).
 
+Theorem gen_group_is_minimum : forall (M : Type) (S : set M) (G : group M),
+  subset S G -> forall (H : group M),
+    subgroup H G -> subset S H -> subset (gen_group S G) H.
+Proof.
+  simpl.
+  intros M S G S_subset_G H H_subgroup_G S_subset_H s s_in_S'.
+  induction s_in_S'.
+  - (* s is id *)
+    apply (subgroup_has_id H_subgroup_G).
+  - (* s ∈ S *)
+    apply (S_subset_H g H1).
+  - (* s ∈ S *)
+    rewrite <- (subgroup_inverse_eq H_subgroup_G (S_subset_H g H1)).
+    apply (inv_belongs (S_subset_H g H1)).
+  - (* s = s's'',  s',s'' ∈ <S> *)
+    inversion H_subgroup_G as [_ bin_eq].
+    rewrite <- (bin_eq g g' IHs_in_S'1 IHs_in_S'2).
+    apply (entire IHs_in_S'1 IHs_in_S'2).
+Qed.
+
 (* H, S, T ⊆ G, H = <T>, G = <S>        *)
 (* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
 Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T : set M),
