@@ -193,12 +193,11 @@ Definition gen_group (M : Type) (S :set M) (G : group M) :=
     (idR G) (idL G)
     (invR G) (invL G).
 
-Theorem gen_group_is_minimum : forall (M : Type) (S : set M) (G : group M),
-  subset S G -> forall (H : group M),
-    subgroup H G -> subset S H -> subset (gen_group S G) H.
+Theorem gen_group_is_minimum : forall (M : Type) (S : set M) (H : group M) (G : group M),
+  subset S G -> subgroup H G -> subset S H -> subset (gen_group S G) H.
 Proof.
   simpl.
-  intros M S G S_subset_G H H_subgroup_G S_subset_H s s_in_S'.
+  intros M S H G S_subset_G H_subgroup_G S_subset_H s s_in_S'.
   induction s_in_S'.
   - (* s is id *)
     apply (subgroup_has_id H_subgroup_G).
