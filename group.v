@@ -18,6 +18,9 @@ Structure group M := {
   invL : forall g, bin (inverse g) g = id
 }.
 
+Definition set_of_group (M : Type) (G : group M) := fun x => cset G x.
+Coercion set_of_group : group >-> Funclass.
+
 Lemma both_sides_L : forall (M : Type) (bin : M -> M -> M) (x y z : M),
   x = y -> bin z x = bin z y.
 Proof.

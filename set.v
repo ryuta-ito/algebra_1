@@ -7,6 +7,8 @@ Definition set (M : Type) := M -> Prop.
 Definition belongs (M : Type) (x : M) (P : set M) : Prop := P x.
 Arguments belongs M x P /.
 
+Notation "P \in x" := (belongs x P) (at level 11).
+
 Axiom belongs__exists : forall (M : Type) (x : M) (P : set M),
   belongs x P -> exists y, belongs y P /\ x = y.
 
