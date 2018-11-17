@@ -45,7 +45,7 @@ Definition eq_class (X : Type) (r : eq_R X) x : set X :=
 Arguments eq_class X r x/.
 
 Theorem x_belongs_x_eq_class : forall (X : Type) (r : eq_R X) x,
-  belongs x (eq_class r x).
+  x \in (eq_class r x).
 Proof.
   simpl. intros.
   apply (refl r).
@@ -53,8 +53,8 @@ Qed.
 
 Theorem belongs_y_z_in_eq_class__y_z_is_eq :
   forall (X : Type) (x y z : X) (r : eq_R X),
-    belongs y (eq_class r x) ->
-    belongs z (eq_class r x) ->
+    y \in (eq_class r x) ->
+    z \in (eq_class r x) ->
     eq_r r y z.
 Proof.
   simpl. intros.
@@ -64,7 +64,7 @@ Qed.
 
 Theorem belongs_y_in_x_eq_class__x_eq_class_eq_y_eq_class :
   forall (X : Type) (x y : X) (r : eq_R X),
-    belongs y (eq_class r x) ->
+    y \in (eq_class r x) ->
     same_set (eq_class r x) (eq_class r y).
 Proof.
   simpl. intros.

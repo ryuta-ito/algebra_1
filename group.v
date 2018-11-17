@@ -6,11 +6,11 @@ Unset Strict Implicit.
 Structure group M := {
   cset :> set M;
   id : M;
-  id_belongs : belongs id cset;
+  id_belongs : id \in cset;
   bin : M -> M -> M;
   inverse : M -> M;
-  inv_belongs : forall g, belongs g cset -> belongs (inverse g) cset;
-  entire : forall x y, belongs x cset -> belongs y cset -> belongs (bin x y) cset;
+  inv_belongs : forall g, g \in cset -> (inverse g) \in cset;
+  entire : forall x y, x \in cset -> y \in cset -> (bin x y) \in cset;
   assoc : forall x y z, bin x (bin y z) = bin (bin x y) z;
   idR : forall g, bin g id = g;
   idL : forall g, bin id g = g;
@@ -87,15 +87,15 @@ Proof.
 Qed.
 
 Definition subgroup (M : Type) (H G : group M) :=
-  (forall g, belongs g H -> belongs g G) /\
-  forall g g', belongs g H -> belongs g' H -> bin H g g' = bin G g g'.
+  (forall g, g \in H -> g \in G) /\
+  forall g g', g \in H -> g' \in H -> bin H g g' = bin G g g'.
 Arguments subgroup M H G /.
 
 Definition normal_group (M : Type) (H G : group M) := forall h g,
   subgroup H G ->
-  belongs g G ->
-  belongs h H ->
-  belongs (bin G (bin G g h) (inverse G g)) H.
+  g \in G ->
+  h \in H ->
+  (bin G (bin G g h) (inverse G g)) \in H.
 Arguments normal_group M H G /.
 
 Theorem subgroup_id_eq : forall (M : Type) (H G : group M),
@@ -117,7 +117,7 @@ Proof.
 Qed.
 
 Theorem subgroup_has_id : forall (M : Type) (H G : group M),
-  subgroup H G -> belongs (id G) H.
+  subgroup H G -> (id G) \in H.
 Proof.
   intros.
   rewrite <- (subgroup_id_eq H0).
@@ -126,7 +126,7 @@ Qed.
 
 Theorem subgroup_inverse_eq : forall (M : Type) (H G : group M) x,
   subgroup H G ->
-  belongs x H ->
+  x \in H ->
   inverse H x = inverse G x.
 Proof.
   intros.
@@ -147,29 +147,29 @@ Qed.
 Inductive group_gen (M : Type) (S : set M) (G : group M) : M -> Prop :=
 | group_gen_id : group_gen S G (id G)
 | group_gen_base : forall g,
-    subset S G -> belongs g S -> group_gen S G g
+    subset S G -> g \in S -> group_gen S G g
 | group_gen_base_inverse : forall g,
-    subset S G -> belongs g S -> group_gen S G (inverse G g)
+    subset S G -> g \in S -> group_gen S G (inverse G g)
 | group_gen_bin : forall g g',
     group_gen S G g -> group_gen S G g' -> group_gen S G (bin G g g').
 
-Theorem group_gen_set_has_id : forall (M : Type) (S : set M) (G : group M), belongs (id G) (group_gen S G).
+Theorem group_gen_set_has_id : forall (M : Type) (S : set M) (G : group M), (id G) \in (group_gen S G).
 Proof.
   simpl. intros.
   apply group_gen_id.
 Qed.
 
 Theorem group_gen_set_is_entire : forall (M : Type) (S : set M) (G : group M) g g',
-  belongs g (group_gen S G) ->
-  belongs g' (group_gen S G) ->
-  belongs (bin G g g') (group_gen S G).
+  g \in (group_gen S G) ->
+  g' \in (group_gen S G) ->
+  (bin G g g') \in (group_gen S G).
 Proof.
   intros. apply (group_gen_bin H H0).
 Qed.
 
 Theorem group_gen_set_has_inverse : forall (M : Type) (S : set M) (G : group M) g,
-  belongs g (group_gen S G) ->
-  belongs (inverse G g) (group_gen S G).
+  g \in (group_gen S G) ->
+  (inverse G g) \in (group_gen S G).
 Proof.
   simpl.
   intros.
@@ -220,11 +220,9 @@ Qed.
 Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T : set M),
   subset T S -> subset S G ->
   (forall x y,
-    belongs x S -> belongs y T ->
-    belongs (bin G (bin G x y) (inverse G x))
-            (group_gen T G) /\
-    belongs (bin G (bin G (inverse G x) y) x)
-            (group_gen T G)) ->
+    x \in S -> y \in T ->
+    (bin G (bin G x y) (inverse G x)) \in (group_gen T G)/\
+    (bin G (bin G (inverse G x) y) x) \in (group_gen T G)) ->
     normal_group (gen_group T G) (gen_group S G).
 Proof.
   simpl.

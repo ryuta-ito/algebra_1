@@ -6,21 +6,21 @@ Unset Strict Implicit.
 
 Definition left_coset_rel (M : Type) (H G : group M) : relation M :=
   fun x => fun y =>
-    subgroup H G -> belongs (bin G (inverse G x) y) H.
+    subgroup H G -> (bin G (inverse G x) y) \in H.
 
 Definition right_coset_rel (M : Type) (H G : group M) : relation M :=
   fun x => fun y =>
-    subgroup H G -> belongs (bin G y (inverse G x)) H.
+    subgroup H G -> (bin G y (inverse G x)) \in H.
 
 Definition left_coset (M : Type) (H G : group M) (x : M) : set M :=
   fun y => left_coset_rel H G x y.
 
 Definition left_coset' (M : Type) (H G : group M) (x : M) : set M :=
-  fun y => exists h, belongs h H /\ y = bin G x h.
+  fun y => exists h, h \in H /\ y = bin G x h.
 
 Lemma g_in_G_h_in_H__gh_in_gH : forall (M : Type) (H G : group M) h g,
-  belongs h H -> belongs g G ->
-  belongs (bin G g h) (left_coset' H G g).
+  h \in H -> g \in G ->
+  (bin G g h) \in (left_coset' H G g) .
 Proof.
   intros.
   unfold left_coset'.
@@ -37,11 +37,11 @@ Definition right_coset (M : Type) (H G : group M) (x : M) : set M :=
   fun y => right_coset_rel H G x y.
 
 Definition right_coset' (M : Type) (H G : group M) (x : M) : set M :=
-  fun y => exists h, belongs h H /\ y = bin G h x.
+  fun y => exists h, h \in H /\ y = bin G h x.
 
 Lemma g_in_G_h_in_H__gh_in_Hg : forall (M : Type) (H G : group M) h g,
-  belongs h H -> belongs g G ->
-  belongs (bin G h g) (right_coset' H G g).
+  h \in H -> g \in G ->
+  (bin G h g) \in (right_coset' H G g).
 Proof.
   intros.
   unfold right_coset'.
@@ -232,7 +232,7 @@ Definition r_coset_eq_R (M : Type) (H G : group M) : eq_R M :=
 
 (* alpha : gH |-> Hg^(-1) *)
 Inductive alpha (M : Type) (H G : group M) : set M -> set M -> Prop :=
-| alpha_R : forall g, belongs g G ->
+| alpha_R : forall g, g \in G ->
                       (alpha H G
                              (eq_class (l_coset_eq_R H G) g)
                              (eq_class (r_coset_eq_R H G) (inverse G g))).
@@ -260,8 +260,7 @@ Proof.
   inversion g0_in_gH' as [h [h_in_H g0_eq_gh]].
   rewrite g0_eq_gh.
   rewrite inverse_distributive.
-  assert (belongs (bin G (inverse G h) (inverse G g))
-                  (eq_class (r_coset_eq_R H G) (inverse G g)))
+  assert ((bin G (inverse G h) (inverse G g))\in (eq_class (r_coset_eq_R H G) (inverse G g)))
     as inv_h_inv_g_in_H_inv_g.
   -
     apply inv_belongs in h_in_H as inv_h_in_H.
@@ -286,7 +285,7 @@ Qed.
 
 (* beta : Hg |-> g^(-1)H *)
 Inductive beta (M : Type) (H G : group M) : set M -> set M -> Prop :=
-| beta_R : forall g, belongs g G ->
+| beta_R : forall g, g \in G ->
                      (beta H G
                        (eq_class (r_coset_eq_R H G) g)
                        (eq_class (l_coset_eq_R H G) (inverse G g))).

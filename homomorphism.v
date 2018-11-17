@@ -70,14 +70,14 @@ Definition kernel (M M' : Type) (G : group M) (G' : group M') (h : hom G G') : s
 Arguments kernel M M' G G' h /.
 
 Theorem kernel_has_id : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  belongs (id G) (kernel h).
+  (id G) \in (kernel h).
 Proof.
   simpl. intros.
   apply hom_id_map_id.
 Qed.
 
 Theorem kernel_is_entire : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  forall x y, belongs x (kernel h) -> belongs y (kernel h) -> belongs (bin G x y) (kernel h).
+  forall x y, x \in (kernel h) -> y \in (kernel h) -> (bin G x y) \in (kernel h).
 Proof.
   simpl. intros.
   assert (f_xy_eq_fx_fy := hom_law h x y).
@@ -90,7 +90,7 @@ Proof.
 Qed.
 
 Theorem kernel_has_inverse : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  forall x, belongs x (kernel  h) -> belongs (inverse G x) (kernel h).
+  forall x, x \in (kernel  h) -> (inverse G x) \in (kernel h).
 Proof.
   simpl. intros.
   rewrite (hom_inverse_map_inverse h x).
@@ -104,7 +104,7 @@ Definition image (M M' : Type) (G : group M) (G' : group M') (h : hom G G') : se
 Arguments image M M' G G' h /.
 
 Theorem image_has_id : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  belongs (id G') (image h).
+  (id G') \in (image h).
 Proof.
   simpl. intros.
   exists (id G).
@@ -112,7 +112,7 @@ Proof.
 Qed.
 
 Theorem image_is_entire : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  forall x y, belongs x (image h) -> belongs y (image h) -> belongs (bin G' x y) (image h).
+  forall x y, x \in (image h) -> y \in (image h) -> (bin G' x y) \in (image h).
 Proof.
   simpl.
   intros.
@@ -126,7 +126,7 @@ Proof.
 Qed.
 
 Theorem image_has_inverse : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  forall x, belongs x (image h) -> belongs (inverse G' x) (image h).
+  forall x, x \in (image h) -> (inverse G' x) \in (image h).
 Proof.
   simpl. intros.
   inversion H.
@@ -140,7 +140,7 @@ Qed.
 
 Theorem hom_is_injection_iff_kernel_is_id : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
   injection (hom_f h) G G' <->
-  forall x y, belongs x (kernel h) -> belongs y (kernel h) -> x = y /\ x = id G.
+  forall x y, x \in (kernel h) -> y \in (kernel h) -> x = y /\ x = id G.
 Proof.
   simpl. intros.
   split.
