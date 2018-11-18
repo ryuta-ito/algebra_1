@@ -215,6 +215,94 @@ Proof.
     apply (entire IHs_in_S'1 IHs_in_S'2).
 Qed.
 
+(* <{ xyx^-1 | x ∈ G, y ∈ S }> *)
+Definition minimum_normal_group (M : Type) (S : set M) (G : group M) :=
+  let T := (fun g => exists x:M, exists y:M, x \in G /\ y \in S /\ g = bin G (bin G x y) (inverse G x))
+  in gen_group T G.
+
+(* T = { xyx^-1 | x ∈ G, y ∈ S }, <T> ◁ G *)
+Theorem minimum_normal_group_is_normal_group : forall (M : Type) (S : set M) (G : group M),
+  subset S G -> normal_group (minimum_normal_group S G) G.
+Proof.
+  simpl.
+  intros M S G H_subset_G h g H_subgroup_G g_in_G h_in_T.
+  induction h_in_T as [| h T_subset_G h_in_T | h T_subset_G h_in_T | h h'].
+  -
+    rewrite idR.
+    rewrite invR.
+    apply group_gen_id.
+  -
+    simpl in h_in_T.
+    inversion h_in_T as [x h_in_T0].
+    inversion h_in_T0 as [y h_in_T1].
+    inversion h_in_T1 as [x_in_G [y_in_S h_eq_x_y_inv_x]].
+    rewrite h_eq_x_y_inv_x.
+    apply group_gen_base.
+    + assumption.
+    +
+      simpl.
+      exists (bin G g x).
+      exists y.
+      split.
+      * apply (entire g_in_G x_in_G).
+      *
+        split.
+        -- assumption.
+        --
+           rewrite <- assoc.
+           rewrite <- assoc.
+           rewrite <- inverse_distributive.
+           rewrite assoc.
+           rewrite assoc.
+           reflexivity.
+  -
+    simpl in h_in_T.
+    inversion h_in_T as [x h_in_T0].
+    inversion h_in_T0 as [y h_in_T1].
+    inversion h_in_T1 as [x_in_G [y_in_S h_eq_x_y_inv_x]].
+    rewrite h_eq_x_y_inv_x.
+    replace ((bin G (bin G g (inverse G (bin G (bin G x y) (inverse G x)))) (inverse G g)))
+    with (inverse G (inverse G ((bin G (bin G g (inverse G (bin G (bin G x y) (inverse G x)))) (inverse G g)))))
+    by (rewrite inverse_eq; reflexivity).
+    apply group_gen_base_inverse.
+    + assumption.
+    +
+      simpl.
+      exists (bin G g x).
+      exists y.
+      split.
+      *
+        apply (entire g_in_G x_in_G).
+      *
+        split.
+        --
+           assumption.
+        --
+           rewrite inverse_distributive.
+           rewrite inverse_eq.
+           rewrite inverse_distributive.
+           rewrite inverse_eq.
+           rewrite inverse_distributive.
+           rewrite <- assoc.
+           rewrite <- assoc.
+           rewrite assoc.
+           rewrite assoc.
+           reflexivity.
+  -
+    replace h with (bin G h (bin G (inverse G g) g))
+    by (rewrite invL; rewrite idR; reflexivity).
+    +
+      assert (IHhh'_in_T := group_gen_bin IHh_in_T1 IHh_in_T2).
+      rewrite <- assoc in IHhh'_in_T.
+      rewrite <- assoc in IHhh'_in_T.
+      rewrite <- assoc in IHhh'_in_T.
+      rewrite <- assoc.
+      rewrite <- assoc.
+      rewrite <- assoc.
+      rewrite <- assoc.
+      assumption.
+Qed.
+
 (* H, S, T ⊆ G, H = <T>, G = <S>        *)
 (* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
 Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T : set M),
