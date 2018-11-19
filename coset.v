@@ -95,8 +95,6 @@ Proof.
     simpl.
     unfold right_coset,right_coset',right_coset_rel.
     intros s s_inv_x_in_H.
-    (* apply H1 in H0. *)
-    (* simpl in H0. *)
     apply belongs__exists in s_inv_x_in_H.
     inversion s_inv_x_in_H as [h HP].
     inversion HP as [h_in_H eq].
