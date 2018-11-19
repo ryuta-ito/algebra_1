@@ -24,7 +24,7 @@ Structure sub_group M G := {
   sg_subset : sg_group \subset G;
 }.
 
-Structure normal_group_ M (G : group M) := {
+Structure normal_group M (G : group M) := {
   ng_sub_group :> sub_group G;
   ng_low : forall h g,
     g \in G -> h \in ng_sub_group ->
@@ -104,13 +104,13 @@ Definition subgroup (M : Type) (H G : group M) :=
   forall g g', g \in H -> g' \in H -> bin H g g' = bin G g g'.
 Arguments subgroup M H G /.
 
-Definition normal_group (M : Type) (H G : group M) :=
+Definition normalgroup (M : Type) (H G : group M) :=
   subgroup H G ->
   forall h g,
     g \in G ->
     h \in H ->
     (bin G (bin G g h) (inverse G g)) \in H.
-Arguments normal_group M H G /.
+Arguments normalgroup M H G /.
 
 Theorem sub_group_id_eq : forall (M : Type) (G : group M) (H : sub_group G),
   id H = id G.
@@ -231,7 +231,7 @@ Definition minimum_normal_group (M : Type) (S : set M) (G : group M) :=
 
 (* T = { xyx^-1 | x ∈ G, y ∈ S }, <T> ◁ G *)
 Theorem minimum_normal_group_is_normal_group : forall (M : Type) (S : set M) (G : group M),
-  S \subset G -> normal_group (minimum_normal_group S G) G.
+  S \subset G -> normalgroup (minimum_normal_group S G) G.
 Proof.
   simpl.
   intros M S G H_subset_G H_subgroup_G h g g_in_G h_in_T.
@@ -355,7 +355,7 @@ Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T
     x \in S -> y \in T ->
     (bin G (bin G x y) (inverse G x)) \in (group_gen T G)/\
     (bin G (bin G (inverse G x) y) x) \in (group_gen T G)) ->
-    normal_group (gen_group T G) (gen_group S G).
+    normalgroup (gen_group T G) (gen_group S G).
 Proof.
   simpl.
   intros M G S T

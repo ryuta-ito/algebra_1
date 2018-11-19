@@ -243,7 +243,7 @@ Definition kernel_group (M M' : Type) (G : group M) (G' : group M') (h : hom G G
    (invR G) (invL G).
 
 Theorem kernel_group_is_normal_group : forall (M M' : Type) (G : group M) (G' : group M') (h : hom G G'),
-  normal_group (kernel_group h) G.
+  normalgroup (kernel_group h) G.
 Proof.
   simpl. intros.
   rewrite hom_law. rewrite hom_law.
