@@ -303,6 +303,41 @@ Proof.
       assumption.
 Qed.
 
+(* S ⊆ <{xyx^-1 | x ∈ G, y ∈ S}> *)
+Theorem minimum_normal_group_lemma : forall (M : Type) (G : group M) (S : set M),
+  subset S G -> subset S (minimum_normal_group S G).
+Proof.
+  simpl.
+  intros M G S S_subset_G s s_in_S.
+  apply group_gen_base.
+  -
+    simpl.
+    intros s' P.
+    inversion P as [x P'].
+    inversion P' as [y P''].
+    inversion P'' as [x_in_G [y_in_S s'_eq]].
+    rewrite s'_eq.
+    apply S_subset_G in y_in_S as y_in_G.
+    apply inv_belongs in x_in_G as inv_x_in_G.
+    apply (entire (entire x_in_G y_in_G) inv_x_in_G).
+  -
+    simpl.
+    exists (id G).
+    exists s.
+    split.
+    +
+      apply id_belongs.
+    +
+      split.
+      *
+        assumption.
+      *
+        rewrite idL.
+        rewrite id_inverse_eq_id.
+        rewrite idR.
+        reflexivity.
+Qed.
+
 (* H, S, T ⊆ G, H = <T>, G = <S>        *)
 (* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
 Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T : set M),
