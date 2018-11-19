@@ -16,8 +16,10 @@ Definition subset (M : Type) (S T : set M) :=
   forall s, s \in S -> s \in T.
 Arguments subset M S T /.
 
+Notation "X \subset Y" := (subset X Y) (at level 11).
+
 Definition same_set (M : Type) (S T : set M) :=
-  subset S T /\ subset T S.
+  S \subset T /\ T \subset S.
 Arguments same_set M S T /.
 
 Axiom same_set__eq : forall (M : Type) (S T : set M),

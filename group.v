@@ -147,9 +147,9 @@ Qed.
 Inductive group_gen (M : Type) (S : set M) (G : group M) : M -> Prop :=
 | group_gen_id : group_gen S G (id G)
 | group_gen_base : forall g,
-    subset S G -> g \in S -> group_gen S G g
+    S \subset G -> g \in S -> group_gen S G g
 | group_gen_base_inverse : forall g,
-    subset S G -> g \in S -> group_gen S G (inverse G g)
+    S \subset G -> g \in S -> group_gen S G (inverse G g)
 | group_gen_bin : forall g g',
     group_gen S G g -> group_gen S G g' -> group_gen S G (bin G g g').
 
@@ -197,7 +197,7 @@ Definition gen_group (M : Type) (S :set M) (G : group M) :=
     (invR G) (invL G).
 
 Theorem gen_group_is_minimum : forall (M : Type) (S : set M) (H : group M) (G : group M),
-  subset S G -> subgroup H G -> subset S H -> subset (gen_group S G) H.
+  S \subset G -> subgroup H G -> S \subset H -> (gen_group S G) \subset H.
 Proof.
   simpl.
   intros M S H G S_subset_G H_subgroup_G S_subset_H s s_in_S'.
@@ -222,7 +222,7 @@ Definition minimum_normal_group (M : Type) (S : set M) (G : group M) :=
 
 (* T = { xyx^-1 | x ∈ G, y ∈ S }, <T> ◁ G *)
 Theorem minimum_normal_group_is_normal_group : forall (M : Type) (S : set M) (G : group M),
-  subset S G -> normal_group (minimum_normal_group S G) G.
+  S \subset G -> normal_group (minimum_normal_group S G) G.
 Proof.
   simpl.
   intros M S G H_subset_G h g H_subgroup_G g_in_G h_in_T.
@@ -305,7 +305,7 @@ Qed.
 
 (* S ⊆ <{xyx^-1 | x ∈ G, y ∈ S}> *)
 Theorem minimum_normal_group_lemma : forall (M : Type) (G : group M) (S : set M),
-  subset S G -> subset S (minimum_normal_group S G).
+  S \subset G -> S \subset (minimum_normal_group S G).
 Proof.
   simpl.
   intros M G S S_subset_G s s_in_S.
@@ -341,7 +341,7 @@ Qed.
 (* H, S, T ⊆ G, H = <T>, G = <S>        *)
 (* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
 Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T : set M),
-  subset T S -> subset S G ->
+  T \subset S -> S \subset G ->
   (forall x y,
     x \in S -> y \in T ->
     (bin G (bin G x y) (inverse G x)) \in (group_gen T G)/\
