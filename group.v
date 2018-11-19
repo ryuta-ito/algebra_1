@@ -130,29 +130,11 @@ Proof.
     assumption.
 Qed.
 
-Theorem subgroup_id_eq : forall (M : Type) (H G : group M),
-  subgroup H G -> id H = id G.
-Proof.
-  simpl. intros.
-  inversion H0.
-  assert (bin G (id H) (id H) = id H).
-  -
-    rewrite <- (H2 (id H) (id H) (id_belongs H) (id_belongs H)).
-    apply (idL H (id H)).
-  -
-    apply (both_sides_L (bin G)) with (z := inverse G (id H)) in H3.
-    rewrite (invL G (id H)) in H3.
-    rewrite (assoc G (inverse G (id H)) (id H) (id H)) in H3.
-    rewrite (invL G (id H)) in H3.
-    rewrite (idL G (id H)) in H3.
-    assumption.
-Qed.
-
-Theorem subgroup_has_id : forall (M : Type) (H G : group M),
-  subgroup H G -> (id G) \in H.
+Theorem sub_group_has_id : forall (M : Type) (G : group M) (H : sub_group G),
+  (id G) \in H.
 Proof.
   intros.
-  rewrite <- (subgroup_id_eq H0).
+  rewrite <- (sub_group_id_eq H).
   apply (id_belongs H).
 Qed.
 
@@ -169,26 +151,6 @@ Proof.
   rewrite assoc in eq.
   rewrite invL in eq.
   rewrite idL in eq.
-  assumption.
-Qed.
-
-Theorem subgroup_inverse_eq : forall (M : Type) (H G : group M) x,
-  subgroup H G ->
-  x \in H ->
-  inverse H x = inverse G x.
-Proof.
-  intros.
-  inversion H0.
-  assert (bin H x (inverse H x) = bin G x (inverse H x))
-    by (apply (H3 x (inverse H x) H1 (inv_belongs H1))).
-  rewrite (invR H x) in H4.
-  rewrite (subgroup_id_eq H0) in H4.
-  apply (both_sides_L (bin G)) with (z := inverse G x) in H4.
-  rewrite (idR G (inverse G x)) in H4.
-  rewrite (assoc G) in H4.
-  rewrite (invL G x) in H4.
-  rewrite (idL G) in H4.
-  symmetry.
   assumption.
 Qed.
 
@@ -244,22 +206,21 @@ Definition gen_group (M : Type) (S :set M) (G : group M) :=
     (idR G) (idL G)
     (invR G) (invL G).
 
-Theorem gen_group_is_minimum : forall (M : Type) (S : set M) (H : group M) (G : group M),
-  S \subset G -> subgroup H G -> S \subset H -> (gen_group S G) \subset H.
+Theorem gen_group_is_minimum : forall (M : Type) (S : set M) (G : group M) (H : sub_group G),
+  S \subset G -> S \subset H -> (gen_group S G) \subset H.
 Proof.
   simpl.
-  intros M S H G S_subset_G H_subgroup_G S_subset_H s s_in_S'.
+  intros M S G H S_subset_G S_subset_H s s_in_S'.
   induction s_in_S'.
   - (* s is id *)
-    apply (subgroup_has_id H_subgroup_G).
+    apply (sub_group_has_id H).
   - (* s ∈ S *)
     apply (S_subset_H g H1).
   - (* s ∈ S *)
-    rewrite <- (subgroup_inverse_eq H_subgroup_G (S_subset_H g H1)).
+    rewrite <- (sub_group_inverse_eq (S_subset_H g H1)).
     apply (inv_belongs (S_subset_H g H1)).
   - (* s = s's'',  s',s'' ∈ <S> *)
-    inversion H_subgroup_G as [_ bin_eq].
-    rewrite <- (bin_eq g g' IHs_in_S'1 IHs_in_S'2).
+    rewrite <- (sg_bin_eq IHs_in_S'1 IHs_in_S'2).
     apply (entire IHs_in_S'1 IHs_in_S'2).
 Qed.
 
