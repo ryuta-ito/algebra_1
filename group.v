@@ -347,6 +347,36 @@ Proof.
         reflexivity.
 Qed.
 
+(* S ⊆ N -> N ◁ G -> <{xyx^-1 | x ∈ G, y ∈ S}> ⊆ N *)
+Theorem minimum_normal_group_lemma0 : forall (M : Type) (S : set M) (G : group M) (N : normal_group G),
+  subset S N -> subset (minimum_normal_group S G) N.
+Proof.
+  simpl.
+  intros M S G N S_subset_N n n_in_N'.
+  induction n_in_N' as [|n _ n_in_N'|n _ n_in_N'| n n'].
+  -
+    rewrite <- (sub_group_id_eq N).
+    apply id_belongs.
+  -
+    simpl in n_in_N'.
+    inversion n_in_N' as [x [y [x_in_G [y_in_S n_eq]]]].
+    rewrite n_eq.
+    apply (ng_low x_in_G (S_subset_N y y_in_S)).
+  -
+    simpl in n_in_N'.
+    inversion n_in_N' as [x [y [x_in_G [y_in_S n_eq]]]].
+    rewrite n_eq.
+    rewrite inverse_distributive.
+    rewrite inverse_eq.
+    rewrite inverse_distributive.
+    rewrite assoc.
+    rewrite <- (sub_group_inverse_eq (S_subset_N y y_in_S)).
+    apply (ng_low x_in_G (inv_belongs (S_subset_N y y_in_S))).
+  -
+    rewrite <- (sg_bin_eq IHn_in_N'1 IHn_in_N'2).
+    apply (entire IHn_in_N'1 IHn_in_N'2).
+Qed.
+
 (* H, S, T ⊆ G, H = <T>, G = <S>        *)
 (* (∀x ∈ S ∀y ∈ T, x*y*x^-1 ∈ T) -> H ◁ G *)
 Theorem normal_group_mitigative_condition : forall (M : Type) (G : group M) (S T : set M),
