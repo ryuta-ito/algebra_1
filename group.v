@@ -18,6 +18,19 @@ Structure group M := {
   invL : forall g, bin (inverse g) g = id
 }.
 
+Structure sub_group M G := {
+  sg_group :> group M;
+  sg_bin_eq : forall g g', g \in sg_group -> g' \in sg_group -> bin sg_group g g' = bin G g g';
+  sg_subset : sg_group \subset G;
+}.
+
+Structure normal_group_ M (G : group M) := {
+  ng_sub_group :> sub_group G;
+  ng_low : forall h g,
+    g \in G -> h \in ng_sub_group ->
+    (bin G (bin G g h) (inverse G g)) \in ng_sub_group
+}.
+
 Definition set_of_group (M : Type) (G : group M) := fun x => cset G x.
 Coercion set_of_group : group >-> Funclass.
 
