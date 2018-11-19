@@ -112,6 +112,24 @@ Definition normal_group (M : Type) (H G : group M) :=
     (bin G (bin G g h) (inverse G g)) \in H.
 Arguments normal_group M H G /.
 
+Theorem sub_group_id_eq : forall (M : Type) (G : group M) (H : sub_group G),
+  id H = id G.
+Proof.
+  intros M G H.
+  assert (bin G (id H) (id H) = id H) as eq.
+  -
+    rewrite <- (sg_bin_eq (id_belongs H) (id_belongs H)).
+    rewrite idL.
+    reflexivity.
+  -
+    apply (both_sides_L (bin G)) with (z := inverse G (id H)) in eq.
+    rewrite invL in eq.
+    rewrite assoc in eq.
+    rewrite invL in eq.
+    rewrite idL in eq.
+    assumption.
+Qed.
+
 Theorem subgroup_id_eq : forall (M : Type) (H G : group M),
   subgroup H G -> id H = id G.
 Proof.
@@ -136,6 +154,22 @@ Proof.
   intros.
   rewrite <- (subgroup_id_eq H0).
   apply (id_belongs H).
+Qed.
+
+Theorem sub_group_inverse_eq : forall (M : Type) (G : group M) (H : sub_group G) x,
+  x \in H -> inverse H x = inverse G x.
+Proof.
+  intros M G H x x_in_H.
+  assert (bin G x (inverse H x) = bin H x (inverse H x)) as eq
+  by (symmetry; apply (sg_bin_eq x_in_H (inv_belongs x_in_H))).
+  rewrite invR in eq.
+  rewrite sub_group_id_eq in eq.
+  apply (both_sides_L (bin G) (inverse G x)) in eq.
+  rewrite idR in eq.
+  rewrite assoc in eq.
+  rewrite invL in eq.
+  rewrite idL in eq.
+  assumption.
 Qed.
 
 Theorem subgroup_inverse_eq : forall (M : Type) (H G : group M) x,
