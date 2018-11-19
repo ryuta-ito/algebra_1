@@ -91,11 +91,12 @@ Definition subgroup (M : Type) (H G : group M) :=
   forall g g', g \in H -> g' \in H -> bin H g g' = bin G g g'.
 Arguments subgroup M H G /.
 
-Definition normal_group (M : Type) (H G : group M) := forall h g,
+Definition normal_group (M : Type) (H G : group M) :=
   subgroup H G ->
-  g \in G ->
-  h \in H ->
-  (bin G (bin G g h) (inverse G g)) \in H.
+  forall h g,
+    g \in G ->
+    h \in H ->
+    (bin G (bin G g h) (inverse G g)) \in H.
 Arguments normal_group M H G /.
 
 Theorem subgroup_id_eq : forall (M : Type) (H G : group M),
@@ -225,7 +226,7 @@ Theorem minimum_normal_group_is_normal_group : forall (M : Type) (S : set M) (G 
   S \subset G -> normal_group (minimum_normal_group S G) G.
 Proof.
   simpl.
-  intros M S G H_subset_G h g H_subgroup_G g_in_G h_in_T.
+  intros M S G H_subset_G H_subgroup_G h g g_in_G h_in_T.
   induction h_in_T as [| h T_subset_G h_in_T | h T_subset_G h_in_T | h h'].
   -
     rewrite idR.
@@ -352,7 +353,7 @@ Proof.
   intros M G S T
          T_subset_S S_subset_G
          mitigative_normal_group_assumption
-         h g T'_subgroup_S'
+         T'_subgroup_S' h g
          g_in_S'.
   generalize h.  (* important!! *)
   induction g_in_S'
