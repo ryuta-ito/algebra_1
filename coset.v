@@ -305,3 +305,68 @@ Proof.
     rewrite idL.
     reflexivity.
 Qed.
+
+(* N ◁ G -> g ∈ G -> gN = Ng *)
+Theorem normal_group_coset_is_same : forall (M : Type) (G : group M) (N : normal_group G) g,
+  g \in G -> same_set (left_coset' N G g) (right_coset' N G g).
+Proof.
+  simpl.
+  intros M G N g g_in_G.
+  split.
+  - (* -> *)
+    intros n n_in_gN.
+    inversion n_in_gN as [n' [n'_in_N n_eq]].
+    assert (bin G (bin G g n') (inverse G g) \in N) as n''_in_N
+    by apply (ng_low g_in_G n'_in_N).
+    remember (bin G (bin G g n') (inverse G g)) as n''.
+
+    apply (both_sides_R (bin G)) with (z:=g) in Heqn''.
+    rewrite <- assoc in Heqn''.
+    rewrite invL in Heqn''.
+    rewrite idR in Heqn''.
+
+    apply (both_sides_L (bin G)) with (z:=(inverse G g)) in Heqn''.
+    rewrite assoc in Heqn''.
+    rewrite assoc in Heqn''.
+    rewrite invL in Heqn''.
+    rewrite idL in Heqn''.
+
+    rewrite <- Heqn'' in n_eq.
+    rewrite assoc in n_eq.
+    rewrite assoc in n_eq.
+    rewrite invR in n_eq.
+    rewrite idL in n_eq.
+
+    exists n''.
+    split.
+    + assumption.
+    + assumption.
+  - (* <- *)
+    intros n n_in_gN.
+    inversion n_in_gN as [n' [n'_in_N n_eq]].
+    apply inv_belongs in g_in_G as inv_g_in_G.
+    apply (ng_low inv_g_in_G) in n'_in_N as inv_g_n'_g_in_N.
+    rewrite inverse_eq in inv_g_n'_g_in_N.
+    remember (bin G (bin G (inverse G g) n') g) as n''.
+
+    apply (both_sides_R (bin G)) with (z:=(inverse G g)) in Heqn''.
+    rewrite <- assoc in Heqn''.
+    rewrite invR in Heqn''.
+    rewrite idR in Heqn''.
+
+    apply (both_sides_L (bin G)) with (z:=g) in Heqn''.
+    rewrite assoc in Heqn''.
+    rewrite assoc in Heqn''.
+    rewrite invR in Heqn''.
+    rewrite idL in Heqn''.
+
+    rewrite <- Heqn'' in n_eq.
+    rewrite <- assoc in n_eq.
+    rewrite invL in n_eq.
+    rewrite idR in n_eq.
+
+    exists n''.
+    split.
+    + assumption.
+    + assumption.
+Qed.
