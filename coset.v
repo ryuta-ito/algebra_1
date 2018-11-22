@@ -15,6 +15,7 @@ Definition left_coset (M : Type) (G : group M) (H : sub_group G) (x : M) : set M
 
 Definition left_coset' (M : Type) (H G : group M) (x : M) : set M :=
   fun y => exists h, h \in H /\ y = bin G x h.
+Arguments left_coset' M H G x /.
 
 Lemma g_in_G_h_in_H__gh_in_gH : forall (M : Type) (H G : group M) h g,
   h \in H -> g \in G ->
@@ -36,6 +37,7 @@ Definition right_coset (M : Type) (G : group M) (H : sub_group G)(x : M) : set M
 
 Definition right_coset' (M : Type) (H G : group M) (x : M) : set M :=
   fun y => exists h, h \in H /\ y = bin G h x.
+Arguments right_coset' M H G x /.
 
 Lemma g_in_G_h_in_H__gh_in_Hg : forall (M : Type) (H G : group M) h g,
   h \in H -> g \in G ->
