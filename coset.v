@@ -6,12 +6,15 @@ Unset Strict Implicit.
 
 Definition left_coset_rel (M : Type) (G : group M) (H : sub_group G) : relation M :=
   fun x => fun y => (bin G (inverse G x) y) \in H.
+Arguments left_coset_rel M G H /.
 
 Definition right_coset_rel (M : Type) (G : group M) (H : sub_group G) : relation M :=
   fun x => fun y => (bin G y (inverse G x)) \in H.
+Arguments right_coset_rel M G H /.
 
 Definition left_coset (M : Type) (G : group M) (H : sub_group G) (x : M) : set M :=
   fun y => left_coset_rel H x y.
+Arguments left_coset M G H x /.
 
 Definition left_coset' (M : Type) (H G : group M) (x : M) : set M :=
   fun y => exists h, h \in H /\ y = bin G x h.
@@ -22,7 +25,6 @@ Lemma g_in_G_h_in_H__gh_in_gH : forall (M : Type) (H G : group M) h g,
   (bin G g h) \in (left_coset' H G g) .
 Proof.
   intros.
-  unfold left_coset'.
   simpl.
   exists h.
   split.
@@ -34,6 +36,7 @@ Qed.
 
 Definition right_coset (M : Type) (G : group M) (H : sub_group G)(x : M) : set M :=
   fun y => right_coset_rel H x y.
+Arguments right_coset M G H x /.
 
 Definition right_coset' (M : Type) (H G : group M) (x : M) : set M :=
   fun y => exists h, h \in H /\ y = bin G h x.
@@ -44,7 +47,6 @@ Lemma g_in_G_h_in_H__gh_in_Hg : forall (M : Type) (H G : group M) h g,
   (bin G h g) \in (right_coset' H G g).
 Proof.
   intros.
-  unfold right_coset'.
   simpl.
   exists h.
   split.
@@ -61,7 +63,6 @@ Proof.
   split.
   -
     simpl.
-    unfold left_coset,left_coset',left_coset_rel.
     intros s inv_x_s_in_H.
     apply belongs__exists in inv_x_s_in_H.
     inversion inv_x_s_in_H as [h HP].
@@ -78,7 +79,6 @@ Proof.
       reflexivity.
   -
     simpl.
-    unfold left_coset,left_coset',left_coset_rel.
     intros s HP.
     inversion HP as [h [h_in_H eq]].
     rewrite eq.
@@ -95,7 +95,6 @@ Proof.
   split.
   -
     simpl.
-    unfold right_coset,right_coset',right_coset_rel.
     intros s s_inv_x_in_H.
     apply belongs__exists in s_inv_x_in_H.
     inversion s_inv_x_in_H as [h HP].
@@ -112,7 +111,6 @@ Proof.
       reflexivity.
   -
     simpl.
-    unfold right_coset,right_coset',right_coset_rel.
     intros s HP.
     inversion HP as [h [h_in_H eq]].
     rewrite eq.
@@ -126,7 +124,6 @@ Theorem l_coset_rel_reflexive : forall (M : Type) (G : group M) (H : sub_group G
 Proof.
   simpl.
   intros.
-  unfold left_coset_rel.
   rewrite (invL G x).
   apply (sub_group_has_id H).
 Qed.
@@ -135,7 +132,6 @@ Theorem r_coset_rel_reflexive : forall (M : Type) (G : group M) (H : sub_group G
 Proof.
   simpl.
   intros.
-  unfold right_coset_rel.
   rewrite (invR G x).
   apply (sub_group_has_id H).
 Qed.
@@ -143,7 +139,6 @@ Qed.
 Theorem l_coset_rel_symmetric : forall (M : Type) (G : group M) (H : sub_group G), symmetric (left_coset_rel H).
 Proof.
   simpl.
-  unfold left_coset_rel.
   intros M G H x y inv_x_y_in_H.
   apply inv_belongs in inv_x_y_in_H as inv__inv_x_y_in_H.
   rewrite (sub_group_inverse_eq inv_x_y_in_H) in inv__inv_x_y_in_H.
@@ -155,7 +150,6 @@ Qed.
 Theorem r_coset_rel_symmetric : forall (M : Type) (G : group M) (H : sub_group G), symmetric (right_coset_rel H).
 Proof.
   simpl.
-  unfold right_coset_rel.
   intros M G H x y y_inv_x_in_H.
   apply inv_belongs in y_inv_x_in_H as inv__y_inv_x_in_H.
   rewrite (sub_group_inverse_eq y_inv_x_in_H) in inv__y_inv_x_in_H.
@@ -167,7 +161,6 @@ Qed.
 Theorem l_coset_rel_transitive : forall (M : Type) (G : group M) (H : sub_group G), transitive (left_coset_rel H).
 Proof.
   simpl.
-  unfold left_coset_rel.
   intros M G H x y z inv_x_y_in_H inv_y_z_in_H.
   apply (entire inv_x_y_in_H) in inv_y_z_in_H as inv_x_y_inv_y_z_in_H.
   rewrite (sg_bin_eq inv_x_y_in_H inv_y_z_in_H) in inv_x_y_inv_y_z_in_H.
@@ -184,7 +177,6 @@ Qed.
 Theorem r_coset_rel_transitive : forall (M : Type) (G : group M) (H : sub_group G), transitive (right_coset_rel H).
 Proof.
   simpl.
-  unfold right_coset_rel.
   intros M G H x y z y_inv_x_in_H z_inv_y_in_H.
   apply (entire z_inv_y_in_H) in y_inv_x_in_H as z_inv_y_y_inv_x_in_H.
   rewrite (sg_bin_eq z_inv_y_in_H y_inv_x_in_H) in z_inv_y_y_inv_x_in_H.
@@ -234,7 +226,6 @@ Proof.
   inversion gH_eq_gH' as [gH_subseq_gH' _].
   apply gH_subseq_gH' in g0_in_gH as g0_in_gH'.
   simpl in g0_in_gH'.
-  unfold left_coset' in g0_in_gH'.
   inversion g0_in_gH' as [h [h_in_H g0_eq_gh]].
   rewrite g0_eq_gh.
   rewrite inverse_distributive.
@@ -249,7 +240,6 @@ Proof.
     assert (Hg_eq_Hg' := right_coset_eq_right_coset' H (inverse G g)).
     inversion Hg_eq_Hg' as [_ Hg'_subseq_Hg].
     apply Hg'_subseq_Hg in inv_h_inv_g_in_Hg' as inv_h_inv_g_in_Hg.
-    unfold right_coset in inv_h_inv_g_in_Hg.
     rewrite (sub_group_inverse_eq h_in_H) in inv_h_inv_g_in_Hg.
     assumption.
   -
