@@ -25,6 +25,11 @@ Definition map_rel (X Y : Type) (R : gen_rel X Y) :=
   (* forall x x', x = x' -> forall y y', R x y -> R x' y' -> y = y'. *)
 Arguments map_rel X Y R/.
 
+Definition bin_map_rel (X Y Z : Type) (bin_R : X -> Y -> Z -> Prop) :=
+  forall x y z z', bin_R x y z -> bin_R x y z' -> z = z'.
+  (* forall x x', x = x' -> forall y y', R x y -> R x' y' -> y = y'. *)
+Arguments bin_map_rel X Y Z bin_R/.
+
 Definition inverse_rel (X Y : Type) (R : gen_rel X Y) (R' : gen_rel Y X) :=
   forall x y, R x y -> R' y x.
 Arguments inverse_rel X Y R R'/.

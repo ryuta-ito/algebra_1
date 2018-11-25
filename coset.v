@@ -360,3 +360,130 @@ Proof.
     + assumption.
     + assumption.
 Qed.
+
+(* (gN, hN) |-> ghN *)
+Inductive coset_op (M : Type) (G : group M) (N : normal_group G) : set M -> set M -> set M -> Prop :=
+| coset_op_R : forall g h,
+    g \in G ->
+    h \in G ->
+    (coset_op N (left_coset' N G g)
+                (left_coset' N G h)
+                (left_coset' N G (bin G g h))).
+
+Definition set_coset (M : Type) (S T : set M) (bin : M -> M -> M) : set M :=
+  fun x => exists s t, x = bin s t /\ s \in S /\ t \in T.
+Arguments set_coset M S T bin /.
+
+(* (gN)(hN) = ghN *)
+Theorem coset_op_is_hom : forall (M : Type) (G : group M) (N : normal_group G) g h,
+  g \in G -> h \in G ->
+  same_set
+    (set_coset (left_coset' N G g) (left_coset' N G h) (bin G))
+    (left_coset' N G (bin G g h)).
+Proof.
+  simpl.
+  intros M G N g h g_in_G h_in_G.
+  split.
+  - (* -> *)
+    intros gn'hn''.
+    intros gn'hn''_in_gNhN.
+    inversion gn'hn''_in_gNhN as [gn' [hn'' [gn'hn''_eq [[n' [n'_in_N n'_eq]] [n'' [n''_in_N n''_eq]]]]]].
+    rewrite n'_eq in gn'hn''_eq.
+    rewrite n''_eq in gn'hn''_eq.
+    assert (n' = bin G (bin G h (inverse G h)) n') as n'_eq'
+      by (rewrite invR; rewrite idL; reflexivity).
+    rewrite n'_eq' in gn'hn''_eq.
+    rewrite <- assoc in gn'hn''_eq.
+    rewrite <- assoc in gn'hn''_eq.
+    rewrite <- assoc in gn'hn''_eq.
+    replace (bin G g _)
+      with (bin G (bin G g h) (bin G (inverse G h) (bin G n' (bin G h n''))))
+      in gn'hn''_eq
+      by (rewrite <- assoc; reflexivity).
+
+    replace(bin G (inverse G h) (bin G n' (bin G h n'')))
+      with (bin G (bin G (inverse G h) n') (bin G h n''))
+      in gn'hn''_eq
+      by (rewrite <- assoc; reflexivity).
+
+    replace (bin G (bin G (inverse G h) n') (bin G h n''))
+      with (bin G (bin G (bin G (inverse G h) n') h) n'')
+      in gn'hn''_eq
+      by (rewrite <- assoc; reflexivity).
+
+    assert (inv_h_n'_h := ng_low (inv_belongs h_in_G) n'_in_N).
+    rewrite inverse_eq in inv_h_n'_h.
+
+    exists (bin G (bin G (bin G (inverse G h) n') h) n'').
+    split.
+    +
+      assert (eq := entire inv_h_n'_h n''_in_N).
+      rewrite sg_bin_eq in eq by (assumption; assumption).
+      assumption.
+    +
+      assumption.
+  - (* <- *)
+    intros s ghn.
+    inversion ghn as [n [n_in_N s_eq]].
+    assert (g = bin G g (id G)) as eq
+      by (rewrite idR; reflexivity).
+    rewrite eq in s_eq.
+    rewrite <- assoc in s_eq.
+    rewrite <- assoc in s_eq.
+
+    replace (bin G g (bin G (id G) (bin G h n)))
+      with (bin G (bin G g (id G)) (bin G h n))
+      in s_eq
+      by (rewrite <- assoc; reflexivity).
+
+    exists (bin G g (id G)).
+    exists (bin G h n).
+
+    split.
+    +
+      assumption.
+    +
+      split.
+      *
+        exists (id G).
+        split.
+        --
+           apply sub_group_has_id.
+        --
+           reflexivity.
+      *
+        exists n.
+        split.
+        --
+           assumption.
+        --
+           reflexivity.
+Qed.
+
+Theorem coset_op_eq : forall (M : Type) (G : group M) (N : normal_group G) g h,
+  g \in G -> h \in G ->
+    (set_coset (left_coset' N G g) (left_coset' N G h) (bin G)) =
+    (left_coset' N G (bin G g h)).
+Proof.
+  intros.
+  rewrite <- same_set__eq.
+  apply coset_op_is_hom.
+  assumption.
+  assumption.
+Qed.
+
+Theorem coset_op_is_map_rel : forall (M : Type) (G : group M) (N : normal_group G),
+  bin_map_rel (coset_op N).
+Proof.
+  simpl.
+  intros M G N x y z z' coset_op_1 coset_op_2.
+  inversion coset_op_1 as [g h g_in_G h_in_G x_eq y_eq].
+  inversion coset_op_2 as [g' h' g'_in_G h'_in_G  x_eq' y_eq'].
+  rewrite <- (coset_op_eq N g_in_G h_in_G).
+  rewrite <- (coset_op_eq N g'_in_G h'_in_G).
+  rewrite x_eq.
+  rewrite y_eq.
+  rewrite x_eq'.
+  rewrite y_eq'.
+  reflexivity.
+Qed.
